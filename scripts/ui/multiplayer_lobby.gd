@@ -4,6 +4,7 @@ extends Control
 @onready var host_button: Button = $VBoxContainer/Host
 @onready var join_button: Button = $VBoxContainer/Join
 @onready var ip_line: LineEdit = $VBoxContainer/IPAddress
+@onready var name_line: LineEdit = $VBoxContainer/LineEdit
 
 @onready var scroll_container: ScrollContainer = $ScrollContainer
 @onready var players_container: VBoxContainer = $ScrollContainer/PlayersContainer
@@ -18,6 +19,10 @@ func _ready() -> void:
 	start_button.hide()
 	
 func _on_host_pressed() -> void:
+	if name_line.text == "":
+		return
+	ServerManager.player_info["name"] = name_line.text
+	
 	var error = ServerManager.create_game()
 	if error:
 		return
@@ -27,6 +32,10 @@ func _on_host_pressed() -> void:
 	start_button.show()
 	
 func _on_join_pressed() -> void:
+	if name_line.text == "":
+		return
+	ServerManager.player_info["name"] = name_line.text
+	
 	var error = ServerManager.join_game(ip_line.text)
 	if error:
 		return
