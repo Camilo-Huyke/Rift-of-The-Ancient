@@ -2,6 +2,13 @@
 
 [ext_resource type="Script" uid="uid://dt4yanovtged0" path="res://scripts/ui/multiplayer_lobby.gd" id="1_8ihvg"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ihvg"]
+bg_color = Color(0.62352943, 0.9137255, 0.99607843, 0.05490196)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
 [node name="MultiplayerLobby" type="Control" unique_id=1314647869]
 layout_mode = 3
 anchors_preset = 15
@@ -18,10 +25,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -34.0
+offset_top = -50.5
+offset_right = 34.0
+offset_bottom = 50.5
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -36,6 +43,46 @@ text = "Join"
 
 [node name="IPAddress" type="LineEdit" parent="VBoxContainer" unique_id=1141853364]
 layout_mode = 2
+placeholder_text = "IP"
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer" unique_id=1755944155]
+layout_mode = 2
+placeholder_text = "Name"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1469844760]
+visible = false
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8ihvg")
+
+[node name="PlayersContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=2040644245]
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="." unique_id=2119368730]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -28.5
+offset_top = -104.0
+offset_right = 28.5
+offset_bottom = -73.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Iniciar"
 
 [connection signal="pressed" from="VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="VBoxContainer/Join" to="." method="_on_join_pressed"]
