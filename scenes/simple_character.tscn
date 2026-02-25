@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://djsmwir44orp1"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ol6fh"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_au75p"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ol6fh"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1713721941]
+
+[node name="Model" type="MeshInstance3D" parent="." unique_id=2127158406]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_ol6fh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1645549249]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_au75p")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1347178634]
+replication_config = SubResource("SceneReplicationConfig_ol6fh")

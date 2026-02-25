@@ -13,6 +13,7 @@ extends Control
 
 func _ready() -> void:
 	ServerManager.player_connected.connect(_on_player_list_changed)
+	ServerManager.player_disconnected.connect(_on_player_list_changed)
 	ServerManager.server_disconnected.connect(_on_server_disconnected)
 	
 	scroll_container.hide()
@@ -24,7 +25,7 @@ func _on_host_pressed() -> void:
 	ServerManager.player_info["name"] = name_line.text
 	
 	var error = ServerManager.create_game()
-	if error:
+	if error != OK:
 		return
 		
 	main_container.hide()
@@ -37,20 +38,20 @@ func _on_join_pressed() -> void:
 	ServerManager.player_info["name"] = name_line.text
 	
 	var error = ServerManager.join_game(ip_line.text)
-	if error:
+	if error != OK:
 		return
 	
 	main_container.hide()
 	scroll_container.show()
 
-func _on_player_list_changed(_id, _info) -> void:
+func _on_player_list_changed(_id, _info = null) -> void:
 	for child in players_container.get_children():
 		child.queue_free()
 	
 	for p_id in ServerManager.players:
 		var info = ServerManager.players[p_id]
 		var label = Label.new()
-		label.text = info["name"]
+		label.text = info["name"] + (" (Tú)" if  p_id == multiplayer.get_unique_id() else "")
 		players_container.add_child(label)
 		
 func _on_server_disconnected():
@@ -61,3 +62,5 @@ func _on_server_disconnected():
 	scroll_container.hide()
 	start_button.hide()
 	
+func _on_start_button_pressed() -> void:
+	ServerManager.load_game.rpc("res://scenes/level.tscn")

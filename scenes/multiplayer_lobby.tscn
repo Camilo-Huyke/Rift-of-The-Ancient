@@ -86,3 +86,4 @@ text = "Iniciar"
 
 [connection signal="pressed" from="VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="VBoxContainer/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]

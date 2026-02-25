@@ -30,7 +30,8 @@ func join_game(address = ""):
 	if error:
 		return error
 	multiplayer.multiplayer_peer = peer
-
+	return OK
+	
 func create_game():
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_server(PORT, MAX_CONNECTIONS)
@@ -40,6 +41,8 @@ func create_game():
 
 	players[1] = player_info
 	player_connected.emit(1, player_info)
+	
+	return OK
 
 func remove_multiplayer_peer():
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
@@ -57,7 +60,9 @@ func player_loaded():
 	if multiplayer.is_server():
 		players_loaded += 1
 		if players_loaded == players.size():
-			$/root/Game.start_game()
+			var current_map = get_tree().current_scene
+			if current_map.has_method("start_game"):
+				current_map.start_game()
 			players_loaded = 0
 
 # When a peer connects, send them my player info.
