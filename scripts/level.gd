@@ -9,6 +9,7 @@ func _ready() -> void:
 func start_game():
 	if multiplayer.is_server():
 		_spawn_players()
+	print(ServerManager.players)
 		
 func _spawn_players():
 	var counter: int = 0
