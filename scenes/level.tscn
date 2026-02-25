@@ -14,9 +14,10 @@ func _process(delta: float) -> void:
 [sub_resource type="PlaneMesh" id="PlaneMesh_rd3vj"]
 size = Vector2(10, 10)
 
-[node name="Level" type="Node3D" unique_id=431920046 node_paths=PackedStringArray("spawn_points")]
+[node name="Level" type="Node3D" unique_id=431920046 node_paths=PackedStringArray("spawn_points", "players_container")]
 script = ExtResource("1_2q6dc")
 spawn_points = NodePath("SpawnPoints")
+players_container = NodePath("Players")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1780573718]
 
