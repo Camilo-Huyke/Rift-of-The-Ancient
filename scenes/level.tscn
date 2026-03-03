@@ -11,8 +11,19 @@ func _process(delta: float) -> void:
 	label.text = 'FPS: ' + str(Engine.get_frames_per_second())
 "
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_2q6dc"]
+vertices = PackedVector3Array(-4.5, 0.5, -4.5, -4.5, 0.5, 4.5, 4.5, 0.5, 4.5, 4.5, 0.5, -4.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_2q6dc"]
+data = PackedVector3Array(5, 0, 5, -5, 0, 5, 5, 0, -5, -5, 0, 5, -5, 0, -5, 5, 0, -5)
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_rd3vj"]
 size = Vector2(10, 10)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_2q6dc"]
+top_radius = 0.1
+bottom_radius = 0.1
 
 [node name="Level" type="Node3D" unique_id=431920046 node_paths=PackedStringArray("spawn_points", "players_container")]
 script = ExtResource("1_2q6dc")
@@ -34,18 +45,29 @@ layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1326780631]
-mesh = SubResource("PlaneMesh_rd3vj")
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=2145593478]
-transform = Transform3D(1, 0, 0, 0, 0.7918742, 0.6106844, 0, -0.6106844, 0.7918742, -0.29103458, 5.179056, 7.1866813)
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1259847701]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 12.14893, 0)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=926872189]
 _spawnable_scenes = PackedStringArray("uid://djsmwir44orp1")
 spawn_path = NodePath("../Players")
+
+[node name="Map" type="Node3D" parent="." unique_id=1576469866]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Map" unique_id=1654670286]
+navigation_mesh = SubResource("NavigationMesh_2q6dc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/NavigationRegion3D" unique_id=464315484 groups=["floor"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/NavigationRegion3D/StaticBody3D" unique_id=1584862435]
+shape = SubResource("ConcavePolygonShape3D_2q6dc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Map/NavigationRegion3D/StaticBody3D" unique_id=1326780631]
+mesh = SubResource("PlaneMesh_rd3vj")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Map" unique_id=133375090]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7819765, 0, 2.32154)
+mesh = SubResource("CylinderMesh_2q6dc")
 
 [node name="SpawnPoints" type="Node3D" parent="." unique_id=1959704116]
 

@@ -1,15 +1,93 @@
 [gd_scene format=3 uid="uid://djsmwir44orp1"]
 
+[ext_resource type="Script" uid="uid://uqhg5v5ljkj0" path="res://scripts/camera_player.gd" id="1_56nkb"]
+[ext_resource type="Script" uid="uid://1vwp6fujb61u" path="res://scripts/state_machine.gd" id="1_au75p"]
+[ext_resource type="Script" uid="uid://3f2vcsv5wec1" path="res://scripts/idle_state.gd" id="2_ymc3k"]
+[ext_resource type="Script" uid="uid://cykqmibsmgohl" path="res://scripts/walk_state.gd" id="3_uln6f"]
+
+[sub_resource type="GDScript" id="GDScript_au75p"]
+script/source = "extends Player
+
+\"\"\"@export var server_position: Vector3 = Vector3.ZERO
+var position_from_client: Vector3
+var remote_sender: int
+
+func _ready() -> void:
+	server_position = global_position
+	
+func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed(\"move_left\"):
+		if name == str(multiplayer.get_unique_id()):
+			global_position.x -= 0.1
+			if not is_multiplayer_authority():
+				update_position_from_client.rpc_id(1, global_position)
+	if not is_multiplayer_authority():
+		if global_position.distance_to(server_position) > 0.5 : 
+			global_position = server_position
+	else:
+		if remote_sender == int(name):
+			global_position = position_from_client
+		server_position = global_position
+	
+		
+@rpc(\"any_peer\", \"call_remote\", \"unreliable\")
+func update_position_from_client(_position: Vector3):
+	position_from_client = _position
+	remote_sender = multiplayer.get_remote_sender_id()\"\"\"
+"
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ol6fh"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_au75p"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ol6fh"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
 
-[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1713721941]
+[sub_resource type="GDScript" id="GDScript_ol6fh"]
+script/source = "extends Node 
+
+signal change_state
+
+@export var player: Player
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.is_pressed():
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			get_object_by_raycast()
+	if event.is_action_pressed(\"move_left\"):
+		pass
+
+func get_object_by_raycast():
+	var mouse_pos = get_viewport().get_mouse_position()
+	var ray_length = 250
+	var from = player.camera.project_ray_origin(mouse_pos)
+	var to = from + player.camera.project_ray_normal(mouse_pos) * ray_length
+	var space = player.get_world_3d().direct_space_state
+	
+	var ray_query = PhysicsRayQueryParameters3D.new()
+	ray_query.from = from
+	ray_query.to = to
+	
+	ray_query.collision_mask = 1
+	
+	var result = space.intersect_ray(ray_query)
+	
+	if result:
+		if result[\"collider\"].is_in_group(\"floor\"):
+			player.navigation_agent.target_position = Vector3(result.position.x, 0, result.position.z)
+			change_state.emit(\"WalkState\")
+			for i in get_tree().get_nodes_in_group(\"click-to-wave\"):
+				if i.has_method(\"pop\"):
+					i.pop(result.position + Vector3(0, 0.05, 0))
+		else:
+			print(\"no floor found\")
+"
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1713721941 node_paths=PackedStringArray("animation_player", "model")]
+script = SubResource("GDScript_au75p")
+animation_player = NodePath("AnimationPlayer")
+model = NodePath("Model")
+speed = 20.0
+max_health = 1000
 
 [node name="Model" type="MeshInstance3D" parent="." unique_id=2127158406]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -19,5 +97,34 @@ mesh = SubResource("CapsuleMesh_ol6fh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_au75p")
 
+[node name="Camera3D" type="Camera3D" parent="." unique_id=399628225]
+script = ExtResource("1_56nkb")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=188004898]
+path_desired_distance = 0.6
+target_desired_distance = 0.1
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(0.36538866, 0.55029064, 0.8339613, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2011171582]
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1347178634]
 replication_config = SubResource("SceneReplicationConfig_ol6fh")
+
+[node name="StateMachine" type="Node" parent="." unique_id=1682587064 node_paths=PackedStringArray("initial_state", "input_player")]
+script = ExtResource("1_au75p")
+initial_state = NodePath("IdleState")
+input_player = NodePath("../InputPlayer")
+
+[node name="IdleState" type="Node" parent="StateMachine" unique_id=216863480 node_paths=PackedStringArray("player")]
+script = ExtResource("2_ymc3k")
+player = NodePath("../..")
+
+[node name="WalkState" type="Node" parent="StateMachine" unique_id=1644023876 node_paths=PackedStringArray("player")]
+script = ExtResource("3_uln6f")
+player = NodePath("../..")
+
+[node name="InputPlayer" type="Node" parent="." unique_id=700497628 node_paths=PackedStringArray("player")]
+script = SubResource("GDScript_ol6fh")
+player = NodePath("..")
