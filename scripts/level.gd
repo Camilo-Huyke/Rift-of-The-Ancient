@@ -14,9 +14,10 @@ func start_game():
 func _spawn_players():
 	var counter: int = 0
 	var list_point = spawn_points.get_children()
+	var p = preload("res://scenes/simple_character.tscn")
 	for id in ServerManager.players:
-		var p = preload("res://scenes/simple_character.tscn").instantiate()
-		p.name = str(id)
+		var _p = p.instantiate()
+		_p.name = str(id)
 		counter += 1
-		players_container.add_child(p, true)
-		p.global_position = list_point[counter].global_position
+		players_container.add_child(_p, true)
+		_p.global_position = list_point[counter].global_position

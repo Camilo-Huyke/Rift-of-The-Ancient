@@ -14,3 +14,7 @@ var current_health: int
 #Stats
 @export var speed: float 
 @export var max_health: int
+
+func _ready() -> void:
+	if not str(multiplayer.get_unique_id()) == name:
+		camera.queue_free()

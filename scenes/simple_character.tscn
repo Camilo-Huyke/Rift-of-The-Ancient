@@ -41,6 +41,9 @@ func update_position_from_client(_position: Vector3):
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_au75p"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ol6fh"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
 
 [sub_resource type="GDScript" id="GDScript_ol6fh"]
 script/source = "extends Node 
@@ -49,12 +52,13 @@ signal change_state
 
 @export var player: Player
 
+var result = null
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		if event.button_index == MOUSE_BUTTON_RIGHT:
-			get_object_by_raycast()
-	if event.is_action_pressed(\"move_left\"):
-		pass
+			if str(multiplayer.get_unique_id()) == owner.name:
+				get_object_by_raycast()
 
 func get_object_by_raycast():
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -69,7 +73,7 @@ func get_object_by_raycast():
 	
 	ray_query.collision_mask = 1
 	
-	var result = space.intersect_ray(ray_query)
+	result = space.intersect_ray(ray_query)
 	
 	if result:
 		if result[\"collider\"].is_in_group(\"floor\"):
@@ -80,6 +84,15 @@ func get_object_by_raycast():
 					i.pop(result.position + Vector3(0, 0.05, 0))
 		else:
 			print(\"no floor found\")
+	
+	request_move.rpc_id(1, player.navigation_agent.target_position)
+	
+@rpc(\"any_peer\", \"call_local\", \"unreliable\")
+func request_move(_position):
+	if str(multiplayer.get_remote_sender_id()) == owner.name:
+		print(multiplayer.get_unique_id())
+		player.navigation_agent.target_position = _position
+		change_state.emit(\"WalkState\")
 "
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1713721941 node_paths=PackedStringArray("animation_player", "model")]
