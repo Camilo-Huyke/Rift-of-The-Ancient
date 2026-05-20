@@ -8,8 +8,9 @@ class_name Player
 @export var model: Node3D
 
 #Properties
-var direction: Vector3 = Vector3()
+var direction: Vector3 = Vector3.ZERO
 var current_health: int
+var syn_velocity: Vector3 = Vector3.ZERO
 
 #Stats
 @export var speed: float 

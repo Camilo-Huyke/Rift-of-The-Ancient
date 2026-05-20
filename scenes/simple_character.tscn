@@ -40,10 +40,10 @@ func update_position_from_client(_position: Vector3):
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_au75p"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ol6fh"]
-properties/0/path = NodePath(".:position")
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_56nkb"]
+properties/0/path = NodePath(".:syn_velocity")
 properties/0/spawn = true
-properties/0/replication_mode = 2
+properties/0/replication_mode = 1
 
 [sub_resource type="GDScript" id="GDScript_ol6fh"]
 script/source = "extends Node 
@@ -121,10 +121,10 @@ debug_enabled = true
 debug_use_custom = true
 debug_path_custom_color = Color(0.36538866, 0.55029064, 0.8339613, 1)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2011171582]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1001933218]
+replication_config = SubResource("SceneReplicationConfig_56nkb")
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1347178634]
-replication_config = SubResource("SceneReplicationConfig_ol6fh")
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2011171582]
 
 [node name="StateMachine" type="Node" parent="." unique_id=1682587064 node_paths=PackedStringArray("initial_state", "input_player")]
 script = ExtResource("1_au75p")
