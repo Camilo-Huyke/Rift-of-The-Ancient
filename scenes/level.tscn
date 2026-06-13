@@ -41,7 +41,7 @@ script = SubResource("GDScript_rd3vj")
 label = NodePath("Label")
 
 [node name="Label" type="Label" parent="CanvasLayer/Control" unique_id=1180597650]
-layout_mode = 0
+layout_mode = 1
 offset_right = 40.0
 offset_bottom = 23.0
 
